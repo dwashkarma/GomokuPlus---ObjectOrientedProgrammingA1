@@ -40,4 +40,14 @@ private int eraserCount;
             Console.WriteLine($"No heavy stones left for {playerType}");
         }
     }
+
+// reduce the eraser count but does not return anything
+    public void  useEraser(){
+        if(eraserCount>0){
+            eraserCount--;
+        }
+        else{
+            Console.WriteLine($"No erasers left for {playerType}");
+        }
+    }
 }
