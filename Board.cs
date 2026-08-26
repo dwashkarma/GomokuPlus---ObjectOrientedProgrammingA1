@@ -57,4 +57,39 @@ public class Board
             return false;
         }
     }
+
+    public bool EraseStone(int row, int col,PlayerTypes currentPlayer){
+
+        
+        if(!IsValidCell(row,col) ){
+            Console.WriteLine($"Cannot erase stone at {row},{col}. Cell is either not valid.");
+            return  false;
+        }
+        if(IsEmptyCell(row,col)){
+            Console.WriteLine($"Cannot erase stone at {row},{col}. Cell is already empty.");
+            return false;
+        }
+
+
+        Stone? targetStone = board[row - 1, col - 1];
+            
+        bool IsOpponentStone=targetStone.Player != currentPlayer;
+
+        bool IsHeavyStone=targetStone.Type==StoneTypes.Heavy;
+        if(IsHeavyStone){
+            Console.WriteLine($"Cannot erase stone at {row},{col}. Stone is heavy.");
+            return false;
+        }
+
+        if (IsOpponentStone && !IsHeavyStone){
+            board[row-1,col-1]=null;
+            return true;
+        }
+        else{
+            Console.WriteLine($"Cannot erase stone at {row},{col}. Cell is either not valid or already empty.");
+            return false;
+        }
+        
+
+    }
 }
