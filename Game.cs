@@ -26,7 +26,7 @@ public class Game{
         while(true){
         board.DisplayBoard();
         Console.WriteLine($"Current player: {currentPlayer.PlayerType}");
-        Console.WriteLine("Enter row and column to place stone (e.g: O3:4):");
+        Console.WriteLine("Enter row and column to place stone (e.g: O3:4) {O for ordinary Stone and H for Heavy Stone}:");
         string? input=Console.ReadLine();
 
 
@@ -48,10 +48,49 @@ public class Game{
         }
 
         
-        int row=int.Parse(parts[0]);
-        int col=int.Parse(parts[1]);
+       if (!int.TryParse(parts[0], out int row) ||
+        !int.TryParse(parts[1], out int col))
+        {
+        Console.WriteLine("Invalid coordinates. Row and column must be numbers.");
+        continue;
+     }
 
 
+        if(command=='O' || command=='o'){
+            Stone stone=new Stone(StoneTypes.Ordinary,currentPlayer.PlayerType);
+            bool success=board.PlaceStone(row,col,stone);
+            if(success){
+                SwitchPlayer();
+            }
+        }
+        else if (command=='H' || command=='h'){
+            if(currentPlayer.HeavyStonesCount<=0){
+                Console.WriteLine($"No heavy stones left for {currentPlayer.PlayerType}");
+                continue;
+            }else{
+                
+                Stone stone=new Stone(StoneTypes.Heavy,currentPlayer.PlayerType);
+                bool success=board.PlaceStone(row,col,stone);
+                if(success){
+                    currentPlayer.UseHeavyStone();
+                    SwitchPlayer();
+                }
+            }
+        }
+        else if(command=='E' || command=='e'){
+            if(currentPlayer.EraserCount<=0){
+                Console.WriteLine($"No erasers left for {currentPlayer.PlayerType}");
+                continue;
+            }
+            bool success=board.EraseStone(row,col,currentPlayer.PlayerType);
+            if(success){
+                currentPlayer.UseEraser();
+                SwitchPlayer();
+            }
+        }
+        else{
+            Console.WriteLine("Invalid command. Use 'O' for ordinary stone, 'H' for heavy stone, or 'E' for eraser.");
+        }
 
 
 
