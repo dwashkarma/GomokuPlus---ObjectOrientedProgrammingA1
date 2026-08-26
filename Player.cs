@@ -32,7 +32,7 @@ private int eraserCount;
     }
 
 // it reduce the number of heavy stones / action but doesnot return anything
-    public void useHeavyStone(){
+    public void UseHeavyStone(){
         if (heavyStonesCount > 0){
             heavyStonesCount--;
         }
@@ -42,7 +42,7 @@ private int eraserCount;
     }
 
 // reduce the eraser count but does not return anything
-    public void  useEraser(){
+    public void  UseEraser(){
         if(eraserCount>0){
             eraserCount--;
         }
