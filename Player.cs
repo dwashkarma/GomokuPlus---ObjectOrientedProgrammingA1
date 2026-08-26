@@ -30,4 +30,14 @@ private int eraserCount;
             return playerType;
         }
     }
+
+// it reduce the number of heavy stones / action but doesnot return anything
+    public void useHeavyStone(){
+        if (heavyStonesCount > 0){
+            heavyStonesCount--;
+        }
+        else{
+            Console.WriteLine($"No heavy stones left for {playerType}");
+        }
+    }
 }
