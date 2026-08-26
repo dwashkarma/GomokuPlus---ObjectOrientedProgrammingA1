@@ -1,3 +1,5 @@
 ﻿Console.WriteLine("GomokuPlus starting...");
-Board board=new Board();
-board.DisplayBoard();
+
+
+Game game=new Game();
+game.Start();
