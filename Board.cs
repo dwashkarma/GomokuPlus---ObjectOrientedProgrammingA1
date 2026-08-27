@@ -142,4 +142,28 @@ public class Board
         }
         return false;
     }
+
+    public bool CheckVertical(PlayerTypes player)
+    {
+        for (int col = 0; col < 10; col++)
+        {
+            int count = 0;
+            for (int row = 0; row < 10; row++)
+            {
+                if (board[row, col] != null && board[row, col]!.Player == player)
+                {
+                    count++;
+                    if (count == 5)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    count = 0;
+                }
+            }
+        }
+        return false;
+    }
 }

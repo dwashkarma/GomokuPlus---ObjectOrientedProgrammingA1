@@ -69,7 +69,7 @@ public class Game
                 bool success = board.PlaceStone(row, col, stone);
                 if (success)
                 {
-                    if (board.CheckHorizontal(currentPlayer.PlayerType))
+                    if (board.CheckHorizontal(currentPlayer.PlayerType) || board.CheckVertical(currentPlayer.PlayerType))
                     {
                         board.DisplayBoard();
                         Console.WriteLine($"{currentPlayer.PlayerType} wins!");
@@ -92,7 +92,7 @@ public class Game
                     bool success = board.PlaceStone(row, col, stone);
                     if (success)
                     {
-                        if (board.CheckHorizontal(currentPlayer.PlayerType))
+                        if (board.CheckHorizontal(currentPlayer.PlayerType) || board.CheckVertical(currentPlayer.PlayerType))
                         {
                             board.DisplayBoard();
                             Console.WriteLine($"{currentPlayer.PlayerType} wins!");
