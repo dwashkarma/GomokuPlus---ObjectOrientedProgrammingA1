@@ -59,6 +59,21 @@ public class Board
         }
     }
 
+    public bool IsBoardFull()
+    {
+        for (int row = 0; row < 10; row++)
+        {
+            for (int col = 0; col < 10; col++)
+            {
+                if (board[row, col] == null)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public bool PlaceStone(int row, int col, Stone stone)
     {
         if (IsValidCell(row, col) && IsEmptyCell(row, col))
@@ -164,6 +179,56 @@ public class Board
                 }
             }
         }
+        return false;
+    }
+
+    public bool CheckDiagonal(PlayerTypes player)
+    {
+        for (int row = 0; row <= 5; row++)
+        {
+            for (int col = 0; col <= 5; col++)
+            {
+                int count = 0;
+                for (int i = 0; i < 5; i++)
+                {
+                    if (board[row + i, col + i] != null && board[row + i, col + i]!.Player == player)
+                    {
+                        count++;
+                        if (count == 5)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        for (int row = 0; row <= 5; row++)
+        {
+            for (int col = 4; col < 10; col++)
+            {
+                int count = 0;
+                for (int i = 0; i < 5; i++)
+                {
+                    if (board[row + i, col - i] != null && board[row + i, col - i]!.Player == player)
+                    {
+                        count++;
+                        if (count == 5)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
         return false;
     }
 }

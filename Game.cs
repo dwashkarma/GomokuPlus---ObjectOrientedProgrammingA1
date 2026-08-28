@@ -1,3 +1,11 @@
+
+enum GameMode
+{
+    HumanVsHuman,
+    HumanVsComputer
+}
+
+
 public class Game
 {
 
@@ -6,12 +14,17 @@ public class Game
     private Player player2;
     private Player currentPlayer;
 
+    private GameMode gameMode;
+
+    private Random randomStone = new Random();
+
     public Game()
     {
         this.board = new Board();
         this.player1 = new Player(PlayerTypes.Player1);
         this.player2 = new Player(PlayerTypes.Player2);
         this.currentPlayer = this.player1;
+
     }
 
     private void SwitchPlayer()
@@ -26,14 +39,106 @@ public class Game
         }
     }
 
+    private void SelectGameMode()
+    {
+        while (true)
+        {
+            Console.WriteLine("Select Game Mode:");
+            Console.WriteLine("1=Human vs Human");
+            Console.WriteLine("2=Human vs Computer");
+            Console.Write("Enter your choice of game mode (1 or 2):");
+
+
+            string? choice = Console.ReadLine();
+            if (choice == "1")
+            {
+                gameMode = GameMode.HumanVsHuman;
+                break;
+            }
+            else if (choice == "2")
+            {
+                gameMode = GameMode.HumanVsComputer;
+                break;
+            }
+            else
+            {
+                Console.WriteLine("Invalid choice. Please select 1 = Human vs Human or 2 = Human vs Computer.");
+
+
+            }
+        }
+    }
+
+
+    private bool ComputerMove()
+    {
+        while (true)
+        {
+            if (board.IsBoardFull())
+            {
+                Console.WriteLine("Board cells are full and computer cannot place any stones.");
+                SwitchPlayer();
+                return false;
+            }
+            int row = randomStone.Next(1, 11);
+            int col = randomStone.Next(1, 11);
+            if (board.IsEmptyCell(row, col))
+            {
+                Console.WriteLine("----------Computer Placing the stone.----------");
+                Stone stone = new Stone(StoneTypes.Ordinary, PlayerTypes.Player2);
+                bool success = board.PlaceStone(row, col, stone);
+                if (success)
+                {
+
+                    Console.WriteLine($"Stone Placed by Computer at {row}: {col}");
+
+                    if (board.CheckVertical(PlayerTypes.Player2) || board.CheckHorizontal(PlayerTypes.Player2) || board.CheckDiagonal(PlayerTypes.Player2))
+                    {
+                        board.DisplayBoard();
+                        Console.WriteLine($"{PlayerTypes.Player2} wins!");
+                        return true;
+
+                    }
+                    else
+                    {
+                        SwitchPlayer();
+                        return false;
+
+                    }
+                }
+
+            }
+
+
+        }
+
+    }
+
+
+
     public void Start()
     {
+        SelectGameMode();
+        Console.WriteLine($"Game mode selected: {gameMode}");
 
         while (true)
         {
             board.DisplayBoard();
+
+
+            if (gameMode == GameMode.HumanVsComputer && currentPlayer.PlayerType == PlayerTypes.Player2)
+            {
+                bool computerWins = ComputerMove();
+                if (computerWins)
+                {
+                    break;
+                }
+
+                continue;
+
+            }
             Console.WriteLine($"Current player: {currentPlayer.PlayerType}");
-            Console.WriteLine("Enter row and column to place stone (e.g: O3:4) {O for ordinary Stone and H for Heavy Stone}:");
+            Console.WriteLine("Enter row and column to place stone (e.g: O3:4) {O = ordinary Stone , H = Heavy Stone and E = Erase Stone}:");
             string? input = Console.ReadLine();
 
 
@@ -69,7 +174,7 @@ public class Game
                 bool success = board.PlaceStone(row, col, stone);
                 if (success)
                 {
-                    if (board.CheckHorizontal(currentPlayer.PlayerType) || board.CheckVertical(currentPlayer.PlayerType))
+                    if (board.CheckHorizontal(currentPlayer.PlayerType) || board.CheckVertical(currentPlayer.PlayerType) || board.CheckDiagonal(currentPlayer.PlayerType))
                     {
                         board.DisplayBoard();
                         Console.WriteLine($"{currentPlayer.PlayerType} wins!");
@@ -92,13 +197,14 @@ public class Game
                     bool success = board.PlaceStone(row, col, stone);
                     if (success)
                     {
-                        if (board.CheckHorizontal(currentPlayer.PlayerType) || board.CheckVertical(currentPlayer.PlayerType))
+                        currentPlayer.UseHeavyStone();
+                        if (board.CheckHorizontal(currentPlayer.PlayerType) || board.CheckVertical(currentPlayer.PlayerType) || board.CheckDiagonal(currentPlayer.PlayerType))
                         {
                             board.DisplayBoard();
                             Console.WriteLine($"{currentPlayer.PlayerType} wins!");
                             break;
                         }
-                        currentPlayer.UseHeavyStone();
+
                         SwitchPlayer();
                     }
                 }
@@ -120,7 +226,7 @@ public class Game
             }
             else
             {
-                Console.WriteLine("Invalid command. Use 'O' = ordinary stone, 'H' = heavy stone, or 'E' = eraser.");
+                Console.WriteLine("Invalid command. Use 'O' = ordinary stone, 'H' = heavy stone, or 'E' = erase stone.");
             }
 
 
