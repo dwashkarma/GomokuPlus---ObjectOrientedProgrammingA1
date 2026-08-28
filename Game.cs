@@ -138,7 +138,7 @@ public class Game
 
             }
             Console.WriteLine($"Current player: {currentPlayer.PlayerType}");
-            Console.WriteLine("Enter row and column to place stone (e.g: O3:4) {O = ordinary Stone , H = Heavy Stone and E = Erase Stone}:");
+            Console.WriteLine("Enter row and column to place stone (e.g: O3:4) {O = ordinary Stone , H = Heavy Stone , E = Erase Stone or Help = open help information}:");
             string? input = Console.ReadLine();
 
 
@@ -157,6 +157,20 @@ public class Game
             {
                 LoadGame();
                 continue;
+            }
+
+
+            if (input == "help")
+            {
+                ShowHelp();
+                continue;
+            }
+
+            if (input == "Q")
+
+            {
+                Console.WriteLine("Game has been ended.");
+                break;
             }
 
             char command = input[0];
@@ -237,7 +251,7 @@ public class Game
             }
             else
             {
-                Console.WriteLine("Invalid command. Use 'O' = ordinary stone, 'H' = heavy stone, or 'E' = erase stone.");
+                Console.WriteLine("Invalid command. Use 'O' = ordinary stone, 'H' = heavy stone, or 'E' = erase stone or Help = open help information.");
             }
         }
     }
@@ -523,5 +537,17 @@ public class Game
         Console.WriteLine();
         Console.WriteLine("Final board:");
         board.DisplayBoard();
+    }
+
+
+    public void ShowHelp()
+    {
+        Console.WriteLine("===GomokuPlus===");
+        Console.WriteLine("O3:4 for Ordinary Stone.");
+        Console.WriteLine("H2:4 for Heavy Stone.");
+        Console.WriteLine("S or s to save game.");
+        Console.WriteLine("L or l to load save game.");
+        Console.WriteLine("Q to quit the game.");
+        Console.WriteLine("Help for help.");
     }
 }
