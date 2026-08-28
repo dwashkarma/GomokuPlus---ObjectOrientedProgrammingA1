@@ -122,7 +122,7 @@ public class Board
         }
         else
         {
-            Console.WriteLine($"Cannot erase stone at {row},{col}. Cell is either not valid or already empty.");
+            Console.WriteLine($"Cannot erase stone at {row},{col}. Cannot erase own stone , opponent's heavy stone or its already empty.");
             return false;
         }
 
@@ -231,4 +231,16 @@ public class Board
 
         return false;
     }
+
+
+    public Stone? GetStone(int row, int col)
+    {
+        if (!IsValidCell(row, col))
+        {
+            return null;
+        }
+        return board[row - 1, col - 1];
+    }
+
+
 }

@@ -148,10 +148,21 @@ public class Game
                 continue;
             }
 
+            if (input == ("S") || input == "s")
+            {
+                SaveGame();
+                continue;
+            }
+            if (input == ("L") || input == "l")
+            {
+                LoadGame();
+                continue;
+            }
 
             char command = input[0];
             string coordinates = input.Substring(1);
             string[] parts = coordinates.Split(":");
+
 
             if (parts.Length != 2)
             {
@@ -228,12 +239,289 @@ public class Game
             {
                 Console.WriteLine("Invalid command. Use 'O' = ordinary stone, 'H' = heavy stone, or 'E' = erase stone.");
             }
-
-
-
-
-
         }
     }
 
+
+    public void SaveGame()
+    {
+        Directory.CreateDirectory("SavedGames");
+        using (StreamWriter writer = new StreamWriter("SavedGames/savegame.txt"))
+        {
+            writer.WriteLine($"Game Mode: {gameMode}");
+            writer.WriteLine($"Current Player: {currentPlayer.PlayerType}");
+
+            writer.WriteLine($"Player1 Heavy Stones: {player1.HeavyStonesCount}");
+            writer.WriteLine($"Player1 Eraser: {player1.EraserCount}");
+
+            writer.WriteLine($"Player2 Heavy Stones: {player2.HeavyStonesCount}");
+            writer.WriteLine($"Player2 Eraser: {player2.EraserCount}");
+
+            writer.WriteLine("----Board data----");
+
+            for (int row = 1; row <= 10; row++)
+            {
+                for (int col = 1; col <= 10; col++)
+                {
+                    Stone? stone = board.GetStone(row, col);
+                    if (stone != null)
+                    {
+                        writer.WriteLine($"{row},{col},{stone.Player},{stone.Type}");
+                    }
+                }
+            }
+
+
+        }
+        Console.WriteLine("Game saved successfully.");
+
+    }
+
+
+    public void LoadGame()
+    {
+        string filePath = "SavedGames/savegame.txt";
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine("Cannot find the file.");
+            return;
+        }
+        Console.WriteLine("Saved file found successfully.");
+        string[] lines = File.ReadAllLines(filePath);
+        Console.WriteLine("Files loaded succesfully.");
+
+        string[] gameModeSection = lines[0].Split(":");
+        string savedGameMode = gameModeSection[1].Trim();
+
+
+        if (savedGameMode == "HumanVsHuman")
+        {
+            gameMode = GameMode.HumanVsHuman;
+        }
+        else if (savedGameMode == "HumanVsComputer")
+        {
+            gameMode = GameMode.HumanVsComputer;
+        }
+
+
+        string[] savedCurrentPlayerSection = lines[1].Split(":");
+        string savedCurrentPlayer = savedCurrentPlayerSection[1].Trim();
+        if (savedCurrentPlayer == "Player1")
+        {
+            currentPlayer = player1;
+        }
+        else if (savedCurrentPlayer == "Player2")
+        {
+            currentPlayer = player2;
+        }
+
+
+        string[] savedP1HeavyStonesSection = lines[2].Split(":");
+        string savedP1HeavyStonesCount = savedP1HeavyStonesSection[1].Trim();
+        if (int.TryParse(savedP1HeavyStonesCount, out int heavyP1Count))
+        {
+            player1.SetHeavyStoneCount(heavyP1Count);
+        }
+
+        string[] savedP1EraserSection = lines[3].Split(":");
+        string savedP1Eraser = savedP1EraserSection[1].Trim();
+        if (int.TryParse(savedP1Eraser, out int eraserP1Count))
+        {
+            player1.SetEraserCount(eraserP1Count);
+        }
+
+
+        string[] savedP2HeavyStonesSection = lines[4].Split(":");
+
+        string savedP2HeavyStonesCount = savedP2HeavyStonesSection[1].Trim();
+        if (int.TryParse(savedP2HeavyStonesCount, out int heavyP2Count))
+        {
+            player2.SetHeavyStoneCount(heavyP2Count);
+        }
+
+        string[] savedP2EraserSection = lines[5].Split(":");
+        string savedP2Eraser = savedP2EraserSection[1].Trim();
+        if (int.TryParse(savedP2Eraser, out int eraserP2Count))
+        {
+            player2.SetEraserCount(eraserP2Count);
+        }
+
+
+        // Getting board data................
+        board = new Board();
+
+        for (int i = 7; i < lines.Length; i++)
+        {
+            string[] stoneData = lines[i].Split(",");
+
+            if (!int.TryParse(stoneData[0], out int row) || !int.TryParse(stoneData[1], out int col))
+            {
+                Console.WriteLine("Invalid row and column data in saved file.");
+                continue;
+            }
+            ;
+
+            string player = stoneData[2];
+            string type = stoneData[3];
+            PlayerTypes savedPlayer;
+            StoneTypes savedStoneTypes;
+            if (player == "Player1")
+            {
+                savedPlayer = PlayerTypes.Player1;
+            }
+            else
+            {
+                savedPlayer = PlayerTypes.Player2;
+            }
+
+            if (type == "Ordinary")
+            {
+                savedStoneTypes = StoneTypes.Ordinary;
+            }
+            else if (type == "Heavy")
+            {
+                savedStoneTypes = StoneTypes.Heavy;
+            }
+            else
+            {
+                Console.WriteLine("Invalid Stone type.");
+                continue;
+            }
+
+
+            Stone stone = new Stone(savedStoneTypes, savedPlayer);
+            board.PlaceStone(row, col, stone);
+        }
+
+
+
+    }
+
+
+
+    public bool GetExecuted(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            Console.WriteLine("Invalid command.");
+            return false;
+        }
+
+        char command = input[0];
+
+        string coordinates = input.Substring(1);
+        string[] parts = coordinates.Split(':');
+
+        if (parts.Length != 2)
+        {
+            Console.WriteLine($"Invalid command: {input}");
+            return false;
+        }
+
+        if (!int.TryParse(parts[0], out int row) ||
+            !int.TryParse(parts[1], out int col))
+        {
+            Console.WriteLine($"Invalid coordinates: {input}");
+            return false;
+        }
+
+        if (command == 'O' || command == 'o')
+        {
+            Stone stone =
+                new Stone(StoneTypes.Ordinary, currentPlayer.PlayerType);
+
+            bool success = board.PlaceStone(row, col, stone);
+
+            if (!success)
+            {
+                return false;
+            }
+
+            if (board.CheckDiagonal(currentPlayer.PlayerType) || board.CheckHorizontal(currentPlayer.PlayerType) || board.CheckVertical(currentPlayer.PlayerType))
+            {
+                return true;
+            }
+
+            SwitchPlayer();
+            return false;
+        }
+
+        // Heavy Stone
+        else if (command == 'H' || command == 'h')
+        {
+            if (currentPlayer.HeavyStonesCount <= 0)
+            {
+                Console.WriteLine($"No heavy stones left for {currentPlayer.PlayerType}");
+                return false;
+            }
+
+            Stone stone = new Stone(StoneTypes.Heavy, currentPlayer.PlayerType);
+            bool success = board.PlaceStone(row, col, stone);
+
+            if (!success)
+            {
+                return false;
+            }
+
+            currentPlayer.UseHeavyStone();
+
+            if (board.CheckDiagonal(currentPlayer.PlayerType) || board.CheckHorizontal(currentPlayer.PlayerType) || board.CheckVertical(currentPlayer.PlayerType))
+            {
+                return true;
+            }
+
+            SwitchPlayer();
+            return false;
+        }
+
+        // Eraser
+        else if (command == 'E' || command == 'e')
+        {
+            if (currentPlayer.EraserCount <= 0)
+            {
+                Console.WriteLine($"No erasers left for {currentPlayer.PlayerType}");
+                return false;
+            }
+
+            bool success = board.EraseStone(row, col, currentPlayer.PlayerType);
+
+            if (!success)
+            {
+                return false;
+            }
+
+            currentPlayer.UseEraser();
+            SwitchPlayer();
+            return false; // erasing a stone can never complete a 5-in-a-row for the eraser's owner
+        }
+
+        else
+        {
+            Console.WriteLine($"Invalid command: {input}");
+        }
+
+        return false;
+    }
+
+    public void RunAutomated(string arguments)
+    {
+        string[] commands = arguments.Split(',');
+
+        foreach (string command in commands)
+        {
+            Console.WriteLine($"Executing: {command}");
+
+            bool won = GetExecuted(command);
+
+            if (won)
+            {
+                Console.WriteLine($"{currentPlayer.PlayerType} wins!");
+                break;
+            }
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("Final board:");
+        board.DisplayBoard();
+    }
 }
