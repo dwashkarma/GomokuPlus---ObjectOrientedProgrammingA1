@@ -15,3 +15,13 @@
 | **Heavy stone**                   | Working | 04:00                       | N/A   |
 | **Eraser stone**                  | Working | 05:00                       | N/A   |
 | **Automated testing script mode** | Working | 06:00                       | N/A   |
+
+## How to Run
+
+```bash
+dotnet run
+```
+
+
+## Save and Load 
+The game will save the game in a Saved Games folder with savedgame.txt file.
